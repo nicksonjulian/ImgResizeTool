@@ -18,7 +18,7 @@ module.exports = function(app) {
 
   app.route('/img_resize')
     .get(function(req, res) {
-      res.sendFile('jigong');
+      res.send('jigong');
     }
   );
 
