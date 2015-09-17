@@ -10,6 +10,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var http = require('http');
+var gm = require('gm');
 var request = require('request');
 
 var download = function(url, filename, app, callback){
@@ -18,6 +19,7 @@ var download = function(url, filename, app, callback){
     console.log('content-length:', res.headers['content-length']);
 
     request(url).pipe(fs.createWriteStream(app.get('appPath') + "/assets/images/" + filename)).on('close', callback);
+
   });
 };
 
@@ -47,7 +49,7 @@ module.exports = function(app) {
   // Insert routes below
   app.use('/api/things', require('./api/thing'));
                  
-  app.use(bodyParser());
+ // app.use(bodyParser());
 
   
   // All undefined asset or api routes should return a 404
@@ -56,13 +58,14 @@ module.exports = function(app) {
 
   app.route('/img_resize')
     .post(function(req, res) {
-      res.write("Downloading " + req.body.imgUrl);
+     // res.write("Downloading " + req.body.imgUrl);
       console.log(req.body.imgUrl);
 
       download(req.body.imgUrl, "file.png", app, function() {
+        gm(app.get('appPath') + 'assets/images/file.png').resize(540, 240, '!');
         console.log("done downloading");
+        res.sendFile(path.resolve(app.get('appPath') + '/app/resize/resize.html'));
       });
-      res.end();
 
 
 
@@ -76,7 +79,7 @@ module.exports = function(app) {
       //   res.end();
       // });
 
-
+      //http://www.google.com/images/srpr/logo3w.png
       // loadImage("http://www.google.com/images/srpr/logo3w.png", function (image, prefix) {
       //   res.write("done rpocess!")
       //   html = '<img src="' + prefix + image + '"/>';
