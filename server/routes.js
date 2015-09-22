@@ -18,7 +18,7 @@ var download = function(url, filename, app, callback){
     console.log('content-type:', res.headers['content-type']);
     console.log('content-length:', res.headers['content-length']);
 
-    request(url).pipe(fs.createWriteStream(app.get('appPath') + "/assets/images/" + filename)).on('close', callback);
+    request(url).pipe(fs.createWriteStream(app.get('appPath') + "/assets/" + filename)).on('close', callback);
 
   });
 };
@@ -58,11 +58,12 @@ module.exports = function(app) {
 
   app.route('/img_resize')
     .post(function(req, res) {
-     // res.write("Downloading " + req.body.imgUrl);
-      console.log(req.body.imgUrl);
+      console.log("THE IMG URL: " + req.body.imgUrl);
 
       download(req.body.imgUrl, "file.png", app, function() {
-        gm(app.get('appPath') + 'assets/images/file.png').resize(540, 240, '!');
+        gm(app.get('appPath') + '/assets/file.png').resize(540, 240).write(app.get('appPath') + '/assets/file2.png', function(err) {
+          console.log(err);
+        });
         console.log("done downloading");
         res.sendFile(path.resolve(app.get('appPath') + '/app/resize/resize.html'));
       });
